@@ -20,7 +20,6 @@ import emitter from "@/utils/events";
 import { feedbackToast } from "@/utils/common";
 import { CustomType } from "@/constants/enum";
 import { getRtcConnectData } from "@/api/im";
-import { v4 as uuidV4 } from "uuid";
 
 type RtcProps = {
   inviteData: InviteData;
@@ -86,8 +85,12 @@ const checkTimeout = () => {
 const tryInvite = async () => {
   if (!isRecv.value) {
     try {
+      const roomID = props.inviteData.invitation?.roomID;
+      if (!roomID) {
+        throw new Error("RTC roomID is missing");
+      }
       const { data } = await getRtcConnectData(
-        uuidV4(),
+        roomID,
         userStore.selfInfo.userID
       );
       config.serverUrl = data.serverUrl;
